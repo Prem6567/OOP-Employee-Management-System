@@ -1,0 +1,231 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Employee {
+    private final int id;
+    private String name;
+    private String department;
+    private double salary;
+
+    public Employee(int id, String name, String department, double salary) {
+        this.id = id;
+        this.name = name;
+        this.department = department;
+        this.salary = salary;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void update(String name, String department, double salary) {
+        this.name = name;
+        this.department = department;
+        this.salary = salary;
+    }
+
+    public void display() {
+        System.out.printf(
+            "%-8d %-20s %-18s %.2f%n",
+            id, name, department, salary
+        );
+    }
+}
+
+public class Main {
+    private static final Scanner input = new Scanner(System.in);
+    private static final ArrayList<Employee> employees =
+        new ArrayList<Employee>();
+
+    private static String readText(String message) {
+        while (true) {
+            System.out.print(message);
+            String value = input.nextLine().trim();
+
+            if (!value.isEmpty()) {
+                return value;
+            }
+
+            System.out.println("Input cannot be empty.");
+        }
+    }
+
+    private static int readInt(String message) {
+        while (true) {
+            System.out.print(message);
+
+            try {
+                return Integer.parseInt(input.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Enter a valid whole number.");
+            }
+        }
+    }
+
+    private static double readSalary(String message) {
+        while (true) {
+            System.out.print(message);
+
+            try {
+                double salary =
+                    Double.parseDouble(input.nextLine().trim());
+
+                if (Double.isFinite(salary) && salary >= 0) {
+                    return salary;
+                }
+            } catch (NumberFormatException e) {
+                // Invalid input is handled below.
+            }
+
+            System.out.println("Enter a valid non-negative salary.");
+        }
+    }
+
+    private static Employee findEmployee(int id) {
+        for (Employee employee : employees) {
+            if (employee.getId() == id) {
+                return employee;
+            }
+        }
+
+        return null;
+    }
+
+    private static void addEmployee() {
+        System.out.println("\n--- Add Employee ---");
+
+        int id = readInt("Enter Employee ID: ");
+
+        if (id <= 0 || findEmployee(id) != null) {
+            System.out.println("ID must be positive and unique.");
+            return;
+        }
+
+        String name = readText("Enter Name: ");
+        String department = readText("Enter Department: ");
+        double salary = readSalary("Enter Monthly Salary: ");
+
+        employees.add(new Employee(id, name, department, salary));
+
+        System.out.println("Employee added successfully!");
+    }
+
+    private static void viewEmployees() {
+        System.out.println("\n--- Employee Directory ---");
+
+        if (employees.isEmpty()) {
+            System.out.println("No employees found.");
+            return;
+        }
+
+        System.out.printf(
+            "%-8s %-20s %-18s %s%n",
+            "ID", "NAME", "DEPARTMENT", "SALARY"
+        );
+
+        System.out.println("---------------------------------------------------------------");
+
+        for (Employee employee : employees) {
+            employee.display();
+        }
+    }
+
+    private static void searchEmployee() {
+        int id = readInt("Enter Employee ID to Search: ");
+        Employee employee = findEmployee(id);
+
+        if (employee == null) {
+            System.out.println("Employee not found.");
+        } else {
+            System.out.printf(
+                "%-8s %-20s %-18s %s%n",
+                "ID", "NAME", "DEPARTMENT", "SALARY"
+            );
+
+            employee.display();
+        }
+    }
+
+    private static void updateEmployee() {
+        int id = readInt("Enter Employee ID to Update: ");
+        Employee employee = findEmployee(id);
+
+        if (employee == null) {
+            System.out.println("Employee not found.");
+            return;
+        }
+
+        String name = readText("Enter New Name: ");
+        String department = readText("Enter New Department: ");
+        double salary = readSalary("Enter New Salary: ");
+
+        employee.update(name, department, salary);
+
+        System.out.println("Employee updated successfully!");
+    }
+
+    private static void deleteEmployee() {
+        int id = readInt("Enter Employee ID to Delete: ");
+        Employee employee = findEmployee(id);
+
+        if (employee == null) {
+            System.out.println("Employee not found.");
+            return;
+        }
+
+        employees.remove(employee);
+
+        System.out.println("Employee deleted successfully!");
+    }
+
+    public static void main(String[] args) {
+        int choice;
+
+        do {
+            System.out.println("\n====================================");
+            System.out.println("    EMPLOYEE MANAGEMENT SYSTEM");
+            System.out.println("====================================");
+            System.out.println("1. Add Employee");
+            System.out.println("2. View All Employees");
+            System.out.println("3. Search Employee");
+            System.out.println("4. Update Employee");
+            System.out.println("5. Delete Employee");
+            System.out.println("6. Exit");
+            System.out.println("====================================");
+
+            choice = readInt("Enter Your Choice: ");
+
+            switch (choice) {
+                case 1:
+                    addEmployee();
+                    break;
+
+                case 2:
+                    viewEmployees();
+                    break;
+
+                case 3:
+                    searchEmployee();
+                    break;
+
+                case 4:
+                    updateEmployee();
+                    break;
+
+                case 5:
+                    deleteEmployee();
+                    break;
+
+                case 6:
+                    System.out.println("Thank you for using the system!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Choose 1 to 6.");
+            }
+
+        } while (choice != 6);
+
+        input.close();
+    }
+}
